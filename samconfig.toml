@@ -1,0 +1,11 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "serverlessrepo-lb-hackathon-chat"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-yitinj596vo5"
+s3_prefix = "serverlessrepo-lb-hackathon-chat"
+region = "eu-north-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "TableName=\"simplechat_connections\""
