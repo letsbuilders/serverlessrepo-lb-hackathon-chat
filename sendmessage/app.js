@@ -9,9 +9,11 @@ const { TABLE_NAME } = process.env;
 
 exports.handler = async event => {
   let connectionData;
+  const postData = JSON.parse(event.body).data;
+  const dataChatId = JSON.parse(event.body).chatId;
   
   try {
-    connectionData = await ddb.scan({ TableName: TABLE_NAME, ProjectionExpression: 'connectionId' }).promise();
+    connectionData = await ddb.scan({ TableName: TABLE_NAME, ProjectionExpression: 'connectionId, chatId' }).promise();
   } catch (e) {
     return { statusCode: 500, body: e.stack };
   }
@@ -21,9 +23,10 @@ exports.handler = async event => {
     endpoint: event.requestContext.domainName + '/' + event.requestContext.stage
   });
   
-  const postData = JSON.parse(event.body).data;
+
   
-  const postCalls = connectionData.Items.map(async ({ connectionId }) => {
+  const postCalls = connectionData.Items.map(async ({ connectionId, chatId }) => {
+  if(dataChatId==chatId) {
     try {
       await apigwManagementApi.postToConnection({ ConnectionId: connectionId, Data: postData }).promise();
     } catch (e) {
@@ -34,6 +37,7 @@ exports.handler = async event => {
         throw e;
       }
     }
+  }
   });
   
   try {
